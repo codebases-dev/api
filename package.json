@@ -1,20 +1,23 @@
 {
-  "name": "@codebases/api",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "check": "biome check .",
-    "check:apply": "biome check --apply .",
-    "deploy": "wrangler deploy",
-    "start": "wrangler dev",
-    "test": "vitest",
-    "typecheck": "tsc"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.7.1",
-    "@cloudflare/workers-types": "^4.20240423.0",
-    "typescript": "^5.4.5",
-    "vitest": "^1.5.2",
-    "wrangler": "3.52.0"
-  }
+	"name": "@codebases/api",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"check": "biome check .",
+		"check:apply": "biome check --apply .",
+		"deploy": "wrangler deploy",
+		"start": "wrangler dev",
+		"test": "vitest",
+		"typecheck": "tsc"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.7.1",
+		"@cloudflare/workers-types": "^4.20240423.0",
+		"typescript": "^5.4.5",
+		"vitest": "^1.5.2",
+		"wrangler": "3.52.0"
+	},
+	"dependencies": {
+		"drizzle-orm": "^0.30.9"
+	}
 }
