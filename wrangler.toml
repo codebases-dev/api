@@ -1,3 +1,8 @@
 name = "codebases-api"
 main = "src/index.ts"
 compatibility_date = "2024-04-27"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "codebases-db"
+database_id = "98195b6c-e3c9-431b-a3b9-387dd059ba05"
