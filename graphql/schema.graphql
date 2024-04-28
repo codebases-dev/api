@@ -1,0 +1,28 @@
+type Mutation {
+  """Create a snippet"""
+  createSnippet(code: String, language: String, userId: Int): Snippet!
+}
+
+type Query {
+  """List of snippets"""
+  snippets: [Snippet!]!
+
+  """A user"""
+  user(id: String): User!
+
+  """List of users"""
+  users: [User!]!
+}
+
+type Snippet {
+  code: String!
+  id: Int!
+  language: String!
+  postedAt: String!
+  userId: Int
+}
+
+type User {
+  id: String!
+  name: String!
+}
