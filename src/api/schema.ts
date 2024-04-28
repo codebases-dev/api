@@ -68,12 +68,17 @@ export async function buildSchema(env: Env) {
 				type: "Snippet",
 				args: {
 					userId: t.arg.string(),
+					title: t.arg.string(),
 					code: t.arg.string(),
 					language: t.arg.string(),
 				},
-				resolve: async (_, { userId, code, language }) => {
+				resolve: async (_, { userId, title, code, language }) => {
 					if (!userId) {
 						throw new Error("User not found");
+					}
+
+					if (!title) {
+						throw new Error("Title is required");
 					}
 
 					if (!code) {
@@ -90,6 +95,7 @@ export async function buildSchema(env: Env) {
 						.values({
 							id: crypto.randomUUID(),
 							userId,
+							title,
 							code,
 							language,
 							postedAt,
@@ -117,6 +123,7 @@ export async function buildSchema(env: Env) {
 		fields: (t) => ({
 			id: t.exposeString("id"),
 			userId: t.exposeString("userId"),
+			title: t.exposeString("title"),
 			code: t.exposeString("code"),
 			language: t.exposeString("language"),
 			postedAt: t.exposeString("postedAt"),

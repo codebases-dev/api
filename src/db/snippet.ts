@@ -6,6 +6,7 @@ export const snippets = sqliteTable("snippets", {
 	userId: text("userId")
 		.references(() => users.id)
 		.notNull(),
+	title: text("title").notNull(),
 	code: text("code").notNull(),
 	language: text("language").notNull(),
 	postedAt: text("postedAt").notNull(),
