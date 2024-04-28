@@ -1,31 +1,31 @@
 {
-  "name": "@codebases/api",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "check": "biome check .",
-    "check:apply": "biome check --apply .",
-    "db:create": "wrangler d1 create codebases-db",
-    "db:delete": "wrangler d1 delete codebases-db",
-    "deploy": "wrangler deploy",
-    "migration:apply": "wrangler d1 migrations apply codebases-db",
-    "migration:apply:remote": "wrangler d1 migrations apply codebases-db --remote",
-    "migration:clear": "rimraf migrations",
-    "migration:generate": "drizzle-kit generate:sqlite --out migrations --schema src/db/schema.ts",
-    "start": "wrangler dev",
-    "test": "vitest",
-    "typecheck": "tsc"
-  },
-  "dependencies": {
-    "drizzle-orm": "^0.30.9"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.7.1",
-    "@cloudflare/workers-types": "^4.20240423.0",
-    "better-sqlite3": "^9.6.0",
-    "drizzle-kit": "^0.20.17",
-    "typescript": "^5.4.5",
-    "vitest": "^1.5.2",
-    "wrangler": "3.52.0"
-  }
+	"name": "@codebases/api",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"check": "biome check .",
+		"check:apply": "biome check --apply .",
+		"db:create": "wrangler d1 create codebases-db",
+		"db:delete": "wrangler d1 delete codebases-db",
+		"deploy": "wrangler deploy",
+		"migration:apply": "wrangler d1 migrations apply codebases-db",
+		"migration:apply:remote": "wrangler d1 migrations apply codebases-db --remote",
+		"migration:clear": "rimraf migrations",
+		"migration:generate": "drizzle-kit generate:sqlite --out migrations --schema src/db/schema.ts",
+		"start": "wrangler dev",
+		"test": "vitest",
+		"typecheck": "tsc"
+	},
+	"dependencies": {
+		"drizzle-orm": "^0.30.9"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.7.1",
+		"@cloudflare/workers-types": "^4.20240423.0",
+		"better-sqlite3": "^9.6.0",
+		"drizzle-kit": "^0.20.17",
+		"typescript": "^5.4.5",
+		"vitest": "^1.5.2",
+		"wrangler": "3.52.0"
+	}
 }
