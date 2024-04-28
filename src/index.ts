@@ -1,4 +1,5 @@
-import type { Env } from "~/env";
+import type { Env } from "./env";
+import { getYoga } from "./yoga";
 
 export default {
 	async fetch(
@@ -6,6 +7,7 @@ export default {
 		env: Env,
 		ctx: ExecutionContext,
 	): Promise<Response> {
-		return new Response("Hello World!");
+		const yoga = await getYoga(env);
+		return yoga(request, ctx);
 	},
 };
