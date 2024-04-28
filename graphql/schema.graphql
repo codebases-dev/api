@@ -1,6 +1,6 @@
 type Mutation {
   """Create a snippet"""
-  createSnippet(code: String, language: String, userId: Int): Snippet!
+  createSnippet(code: String, language: String, userId: String): Snippet!
 }
 
 type Query {
@@ -16,10 +16,10 @@ type Query {
 
 type Snippet {
   code: String!
-  id: Int!
+  id: String!
   language: String!
   postedAt: String!
-  userId: Int
+  userId: String!
 }
 
 type User {

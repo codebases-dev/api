@@ -67,7 +67,7 @@ export async function buildSchema(env: Env) {
 				description: "Create a snippet",
 				type: "Snippet",
 				args: {
-					userId: t.arg.int(),
+					userId: t.arg.string(),
 					code: t.arg.string(),
 					language: t.arg.string(),
 				},
@@ -88,6 +88,7 @@ export async function buildSchema(env: Env) {
 					const result = await db
 						.insert(snippets)
 						.values({
+							id: crypto.randomUUID(),
 							userId,
 							code,
 							language,
@@ -114,8 +115,8 @@ export async function buildSchema(env: Env) {
 
 	builder.objectType("Snippet", {
 		fields: (t) => ({
-			id: t.exposeInt("id"),
-			userId: t.exposeInt("userId", { nullable: true }),
+			id: t.exposeString("id"),
+			userId: t.exposeString("userId"),
 			code: t.exposeString("code"),
 			language: t.exposeString("language"),
 			postedAt: t.exposeString("postedAt"),

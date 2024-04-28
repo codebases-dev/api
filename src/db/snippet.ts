@@ -1,9 +1,9 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { users } from "./user";
 
 export const snippets = sqliteTable("snippets", {
-	id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
-	userId: integer("userId")
+	id: text("id").primaryKey().notNull(),
+	userId: text("userId")
 		.references(() => users.id)
 		.notNull(),
 	code: text("code").notNull(),
