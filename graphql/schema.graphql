@@ -6,12 +6,6 @@ type Mutation {
 type Query {
   """List of snippets"""
   snippets: [Snippet!]!
-
-  """A user"""
-  user(id: String): User!
-
-  """List of users"""
-  users: [User!]!
 }
 
 type Snippet {
@@ -21,9 +15,4 @@ type Snippet {
   postedAt: String!
   title: String!
   userId: String!
-}
-
-type User {
-  id: String!
-  name: String!
 }

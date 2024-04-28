@@ -1,11 +1,8 @@
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { users } from "./user";
 
 export const snippets = sqliteTable("snippets", {
 	id: text("id").primaryKey().notNull(),
-	userId: text("userId")
-		.references(() => users.id)
-		.notNull(),
+	userId: text("userId").notNull(),
 	title: text("title").notNull(),
 	code: text("code").notNull(),
 	language: text("language").notNull(),

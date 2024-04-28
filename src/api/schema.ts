@@ -2,7 +2,7 @@ import { createClerkClient } from "@clerk/backend";
 import SchemaBuilder from "@pothos/core";
 import { desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
-import { type Snippet, type User, snippets } from "~/db/schema";
+import { type Snippet, snippets } from "~/db/schema";
 import type { Env } from "~/env";
 
 export async function buildSchema(env: Env) {
@@ -13,41 +13,12 @@ export async function buildSchema(env: Env) {
 
 	const builder = new SchemaBuilder<{
 		Objects: {
-			User: User;
 			Snippet: Snippet;
 		};
 	}>({});
 
 	builder.queryType({
 		fields: (t) => ({
-			user: t.field({
-				description: "A user",
-				type: "User",
-				args: {
-					id: t.arg.string(),
-				},
-				resolve: async (_, { id }) => {
-					if (!id) {
-						throw new Error("User not found");
-					}
-					const user = await clerk.users.getUser(id);
-					return {
-						id: user.id,
-						name: user.username ?? "",
-					};
-				},
-			}),
-			users: t.field({
-				description: "List of users",
-				type: ["User"],
-				resolve: async () => {
-					const { data: users } = await clerk.users.getUserList();
-					return users.map((user) => ({
-						id: user.id,
-						name: user.username ?? "",
-					}));
-				},
-			}),
 			snippets: t.field({
 				description: "List of snippets",
 				type: ["Snippet"],
@@ -74,8 +45,11 @@ export async function buildSchema(env: Env) {
 				},
 				resolve: async (_, { userId, title, code, language }) => {
 					if (!userId) {
-						throw new Error("User not found");
+						throw new Error("User ID not found");
 					}
+
+					// Check if user exists
+					await clerk.users.getUser(userId);
 
 					if (!title) {
 						throw new Error("Title is required");
@@ -90,6 +64,7 @@ export async function buildSchema(env: Env) {
 					}
 
 					const postedAt = new Date().toISOString();
+
 					const result = await db
 						.insert(snippets)
 						.values({
@@ -109,13 +84,6 @@ export async function buildSchema(env: Env) {
 					return result[0];
 				},
 			}),
-		}),
-	});
-
-	builder.objectType("User", {
-		fields: (t) => ({
-			id: t.exposeString("id"),
-			name: t.exposeString("name"),
 		}),
 	});
 
