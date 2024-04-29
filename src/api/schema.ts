@@ -1,6 +1,6 @@
 import { createClerkClient } from "@clerk/backend";
 import SchemaBuilder from "@pothos/core";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { type Snippet, snippets } from "~/db/schema";
 import type { Env } from "~/env";
@@ -81,6 +81,29 @@ export async function buildSchema(env: Env) {
 
 					if (result.length === 0) {
 						throw new Error("Failed to create snippet");
+					}
+
+					return result[0];
+				},
+			}),
+			deleteSnippet: t.field({
+				description: "Delete a snippet",
+				type: "Snippet",
+				args: {
+					id: t.arg.string(),
+				},
+				resolve: async (_, { id }) => {
+					if (!id) {
+						throw new Error("ID not found");
+					}
+
+					const result = await db
+						.delete(snippets)
+						.where(eq(snippets.id, id))
+						.returning();
+
+					if (result.length === 0) {
+						throw new Error("Failed to delete snippet");
 					}
 
 					return result[0];
