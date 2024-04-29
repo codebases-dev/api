@@ -4,6 +4,7 @@ import { desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { type Snippet, snippets } from "~/db/schema";
 import type { Env } from "~/env";
+import type { User } from "./model";
 
 export async function buildSchema(env: Env) {
 	const db = drizzle(env.DB);
@@ -13,6 +14,7 @@ export async function buildSchema(env: Env) {
 
 	const builder = new SchemaBuilder<{
 		Objects: {
+			User: User;
 			Snippet: Snippet;
 		};
 	}>({});
@@ -87,10 +89,31 @@ export async function buildSchema(env: Env) {
 		}),
 	});
 
+	builder.objectType("User", {
+		fields: (t) => ({
+			id: t.exposeString("id"),
+			username: t.exposeString("username"),
+			displayName: t.exposeString("displayName"),
+			imageUrl: t.exposeString("imageUrl"),
+		}),
+	});
+
 	builder.objectType("Snippet", {
 		fields: (t) => ({
 			id: t.exposeString("id"),
 			userId: t.exposeString("userId"),
+			user: t.field({
+				type: "User",
+				resolve: async (parent) => {
+					const user = await clerk.users.getUser(parent.userId);
+					return {
+						id: user.id,
+						username: user.username ?? "",
+						displayName: user.fullName ?? "",
+						imageUrl: user.imageUrl,
+					};
+				},
+			}),
 			title: t.exposeString("title"),
 			code: t.exposeString("code"),
 			language: t.exposeString("language"),

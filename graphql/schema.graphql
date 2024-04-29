@@ -14,5 +14,13 @@ type Snippet {
   language: String!
   postedAt: String!
   title: String!
+  user: User!
   userId: String!
+}
+
+type User {
+  displayName: String!
+  id: String!
+  imageUrl: String!
+  username: String!
 }
