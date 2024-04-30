@@ -1,10 +1,16 @@
 type Mutation {
   """Create a snippet"""
   createSnippet(code: String, language: String, title: String, userId: String): Snippet!
+
+  """Delete a snippet"""
+  deleteSnippet(id: String): Snippet!
 }
 
 type Query {
-  """List of snippets"""
+  """Get a snippet by ID"""
+  snippet(id: String): Snippet!
+
+  """Get list of snippets"""
   snippets: [Snippet!]!
 }
 

@@ -22,7 +22,7 @@ export async function buildSchema(env: Env) {
 	builder.queryType({
 		fields: (t) => ({
 			snippets: t.field({
-				description: "List of snippets",
+				description: "Get list of snippets",
 				type: ["Snippet"],
 				resolve: async () =>
 					db
@@ -30,6 +30,30 @@ export async function buildSchema(env: Env) {
 						.from(snippets)
 						.orderBy(desc(snippets.postedAt))
 						.limit(100),
+			}),
+			snippet: t.field({
+				description: "Get a snippet by ID",
+				type: "Snippet",
+				args: {
+					id: t.arg.string(),
+				},
+				resolve: async (_, { id }) => {
+					if (!id) {
+						throw new Error("ID not found");
+					}
+
+					const result = await db
+						.select()
+						.from(snippets)
+						.where(eq(snippets.id, id))
+						.limit(1);
+
+					if (result.length === 0) {
+						throw new Error("Snippet not found");
+					}
+
+					return result[0];
+				},
 			}),
 		}),
 	});
