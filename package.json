@@ -1,37 +1,39 @@
 {
-  "name": "@codebases/api",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "check": "biome check .",
-    "check:apply": "biome check --apply .",
-    "db:create": "wrangler d1 create codebases-db",
-    "db:delete": "wrangler d1 delete codebases-db",
-    "deploy": "wrangler deploy",
-    "migration:apply": "wrangler d1 migrations apply codebases-db",
-    "migration:apply:remote": "wrangler d1 migrations apply codebases-db --remote",
-    "migration:clear": "rimraf migrations",
-    "migration:generate": "drizzle-kit generate:sqlite --out migrations --schema src/db/schema.ts",
-    "generate-graphql-schema": "tsx ./scripts/generate-graphql-schema.ts",
-    "start": "wrangler dev",
-    "test": "vitest",
-    "typecheck": "tsc"
-  },
-  "dependencies": {
-    "@clerk/backend": "^1.1.0",
-    "@pothos/core": "^3.41.1",
-    "drizzle-orm": "^0.30.9",
-    "graphql-yoga": "^5.3.0"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.7.1",
-    "@cloudflare/workers-types": "^4.20240423.0",
-    "better-sqlite3": "^9.6.0",
-    "drizzle-kit": "^0.20.17",
-    "rimraf": "^5.0.5",
-    "tsx": "^4.7.3",
-    "typescript": "^5.4.5",
-    "vitest": "^1.5.2",
-    "wrangler": "3.52.0"
-  }
+	"name": "@codebases/api",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"check": "biome check .",
+		"check:apply": "biome check --apply .",
+		"db:create": "wrangler d1 create codebases-db",
+		"db:delete": "wrangler d1 delete codebases-db",
+		"db:seed": "wrangler d1 execute codebases-db --file=db/seed.sql",
+		"db:seed:remote": "wrangler d1 execute codebases-db --file=db/seed.sql --remote",
+		"deploy": "wrangler deploy",
+		"migration:apply": "wrangler d1 db/migrations apply codebases-db",
+		"migration:apply:remote": "wrangler d1 db/migrations apply codebases-db --remote",
+		"migration:clear": "rimraf db/migrations",
+		"migration:generate": "drizzle-kit generate:sqlite --out db/migrations --schema src/db/schema.ts",
+		"generate-graphql-schema": "tsx ./scripts/generate-graphql-schema.ts",
+		"start": "wrangler dev",
+		"test": "vitest",
+		"typecheck": "tsc"
+	},
+	"dependencies": {
+		"@clerk/backend": "^1.1.0",
+		"@pothos/core": "^3.41.1",
+		"drizzle-orm": "^0.30.9",
+		"graphql-yoga": "^5.3.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.7.1",
+		"@cloudflare/workers-types": "^4.20240423.0",
+		"better-sqlite3": "^9.6.0",
+		"drizzle-kit": "^0.20.17",
+		"rimraf": "^5.0.5",
+		"tsx": "^4.7.3",
+		"typescript": "^5.4.5",
+		"vitest": "^1.5.2",
+		"wrangler": "3.52.0"
+	}
 }
