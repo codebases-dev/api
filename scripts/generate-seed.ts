@@ -1,5 +1,9 @@
 import { writeFileSync } from "node:fs";
 
+if (!process.env.TEST_USER_ID) {
+	throw new Error("`TEST_USER_ID` is not set");
+}
+
 const testUserId = process.env.TEST_USER_ID;
 
 const snippets = [
