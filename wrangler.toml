@@ -8,4 +8,5 @@ port = 8080
 [[d1_databases]]
 binding = "DB"
 database_name = "codebases-db"
-database_id = "286bb219-cade-4a9f-8119-c5fc92c8e8e6"
+database_id = "a0fc507d-8bbc-4221-8e72-58aba52ee622"
+migrations_dir = "db/migrations"
