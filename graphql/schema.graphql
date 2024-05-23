@@ -1,27 +1,28 @@
-type Mutation {
-  """Create a snippet"""
-  createSnippet(code: String, language: String, title: String, userId: String): Snippet!
-
-  """Delete a snippet"""
-  deleteSnippet(id: String): Snippet!
-}
-
-type Query {
-  """Get a snippet by ID"""
-  snippet(id: String): Snippet!
-
-  """Get list of snippets"""
-  snippets: [Snippet!]!
-}
-
-type Snippet {
+type HighlightedSnippet {
   code: String!
+  highlightedCodeHtml: String
   id: String!
   language: String!
   postedAt: String!
   title: String!
   user: User!
   userId: String!
+}
+
+type Mutation {
+  """Create a snippet"""
+  createSnippet(code: String, language: String, title: String, userId: String): HighlightedSnippet!
+
+  """Delete a snippet"""
+  deleteSnippet(id: String): HighlightedSnippet!
+}
+
+type Query {
+  """Get a snippet by ID"""
+  snippet(id: String): HighlightedSnippet!
+
+  """Get list of snippets"""
+  snippets: [HighlightedSnippet!]!
 }
 
 type User {

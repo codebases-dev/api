@@ -2,8 +2,9 @@ import { createClerkClient } from "@clerk/backend";
 import SchemaBuilder from "@pothos/core";
 import { desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
-import { type Snippet, snippets } from "~/db/schema";
+import { type Snippet, snippetHighlights, snippets } from "~/db/schema";
 import type { Env } from "~/env";
+import { getHighlightCode } from "./highlight";
 import type { User } from "./model";
 
 export async function buildSchema(env: Env) {
@@ -16,6 +17,7 @@ export async function buildSchema(env: Env) {
 		Objects: {
 			User: User;
 			Snippet: Snippet;
+			HighlightedSnippet: Snippet & { highlightedCodeHtml: string | null };
 		};
 	}>({});
 
@@ -23,17 +25,29 @@ export async function buildSchema(env: Env) {
 		fields: (t) => ({
 			snippets: t.field({
 				description: "Get list of snippets",
-				type: ["Snippet"],
+				type: ["HighlightedSnippet"],
 				resolve: async () =>
 					db
-						.select()
+						.select({
+							id: snippets.id,
+							userId: snippets.userId,
+							title: snippets.title,
+							code: snippets.code,
+							language: snippets.language,
+							postedAt: snippets.postedAt,
+							highlightedCodeHtml: snippetHighlights.highlightedCodeHtml,
+						})
 						.from(snippets)
+						.leftJoin(
+							snippetHighlights,
+							eq(snippets.id, snippetHighlights.snippetId),
+						)
 						.orderBy(desc(snippets.postedAt))
 						.limit(100),
 			}),
 			snippet: t.field({
 				description: "Get a snippet by ID",
-				type: "Snippet",
+				type: "HighlightedSnippet",
 				args: {
 					id: t.arg.string(),
 				},
@@ -43,8 +57,20 @@ export async function buildSchema(env: Env) {
 					}
 
 					const result = await db
-						.select()
+						.select({
+							id: snippets.id,
+							userId: snippets.userId,
+							title: snippets.title,
+							code: snippets.code,
+							language: snippets.language,
+							postedAt: snippets.postedAt,
+							highlightedCodeHtml: snippetHighlights.highlightedCodeHtml,
+						})
 						.from(snippets)
+						.leftJoin(
+							snippetHighlights,
+							eq(snippets.id, snippetHighlights.snippetId),
+						)
 						.where(eq(snippets.id, id))
 						.limit(1);
 
@@ -62,7 +88,7 @@ export async function buildSchema(env: Env) {
 		fields: (t) => ({
 			createSnippet: t.field({
 				description: "Create a snippet",
-				type: "Snippet",
+				type: "HighlightedSnippet",
 				args: {
 					userId: t.arg.string(),
 					title: t.arg.string(),
@@ -91,7 +117,7 @@ export async function buildSchema(env: Env) {
 
 					const postedAt = new Date().toISOString();
 
-					const result = await db
+					const snippetsResult = await db
 						.insert(snippets)
 						.values({
 							id: crypto.randomUUID(),
@@ -103,16 +129,36 @@ export async function buildSchema(env: Env) {
 						})
 						.returning();
 
-					if (result.length === 0) {
+					if (snippetsResult.length === 0) {
 						throw new Error("Failed to create snippet");
 					}
 
-					return result[0];
+					const highlightResult = await getHighlightCode(
+						code,
+						env.HIGHLIGHT_API_URL,
+					);
+
+					const snippetHighlightsResult = await db
+						.insert(snippetHighlights)
+						.values({
+							snippetId: snippetsResult[0].id,
+							highlightedCodeHtml: highlightResult.html,
+						})
+						.returning();
+
+					if (snippetHighlightsResult.length === 0) {
+						throw new Error("Failed to highlight snippet");
+					}
+
+					return {
+						...snippetsResult[0],
+						highlightedCodeHtml: snippetHighlightsResult[0].highlightedCodeHtml,
+					};
 				},
 			}),
 			deleteSnippet: t.field({
 				description: "Delete a snippet",
-				type: "Snippet",
+				type: "HighlightedSnippet",
 				args: {
 					id: t.arg.string(),
 				},
@@ -121,16 +167,24 @@ export async function buildSchema(env: Env) {
 						throw new Error("ID not found");
 					}
 
-					const result = await db
+					const snippetsResult = await db
 						.delete(snippets)
 						.where(eq(snippets.id, id))
 						.returning();
 
-					if (result.length === 0) {
+					if (snippetsResult.length === 0) {
 						throw new Error("Failed to delete snippet");
 					}
 
-					return result[0];
+					const snippetHighlightsResult = await db
+						.delete(snippetHighlights)
+						.where(eq(snippetHighlights.snippetId, id))
+						.returning();
+
+					return {
+						...snippetsResult[0],
+						highlightedCodeHtml: snippetHighlightsResult[0].highlightedCodeHtml,
+					};
 				},
 			}),
 		}),
@@ -145,7 +199,7 @@ export async function buildSchema(env: Env) {
 		}),
 	});
 
-	builder.objectType("Snippet", {
+	builder.objectType("HighlightedSnippet", {
 		fields: (t) => ({
 			id: t.exposeString("id"),
 			userId: t.exposeString("userId"),
@@ -163,6 +217,9 @@ export async function buildSchema(env: Env) {
 			}),
 			title: t.exposeString("title"),
 			code: t.exposeString("code"),
+			highlightedCodeHtml: t.exposeString("highlightedCodeHtml", {
+				nullable: true,
+			}),
 			language: t.exposeString("language"),
 			postedAt: t.exposeString("postedAt"),
 		}),
