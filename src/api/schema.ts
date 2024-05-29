@@ -26,7 +26,10 @@ export async function buildSchema(env: Env) {
 			snippets: t.field({
 				description: "Get list of snippets",
 				type: ["HighlightedSnippet"],
-				resolve: async () =>
+				args: {
+					userId: t.arg.string(),
+				},
+				resolve: async (_, { userId }) =>
 					db
 						.select({
 							id: snippets.id,
@@ -42,6 +45,7 @@ export async function buildSchema(env: Env) {
 							snippetHighlights,
 							eq(snippets.id, snippetHighlights.snippetId),
 						)
+						.where(userId ? eq(snippets.userId, userId) : undefined)
 						.orderBy(desc(snippets.postedAt))
 						.limit(100),
 			}),
