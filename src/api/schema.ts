@@ -17,7 +17,7 @@ export async function buildSchema(env: Env) {
 		Objects: {
 			User: User;
 			Snippet: Snippet;
-			HighlightedSnippet: Snippet & { highlightedCodeHtml: string | null };
+			HighlightedSnippet: Snippet & { highlightedCodeHtml: string };
 		};
 	}>({});
 
@@ -38,7 +38,7 @@ export async function buildSchema(env: Env) {
 							highlightedCodeHtml: snippetHighlights.highlightedCodeHtml,
 						})
 						.from(snippets)
-						.leftJoin(
+						.innerJoin(
 							snippetHighlights,
 							eq(snippets.id, snippetHighlights.snippetId),
 						)
@@ -67,7 +67,7 @@ export async function buildSchema(env: Env) {
 							highlightedCodeHtml: snippetHighlights.highlightedCodeHtml,
 						})
 						.from(snippets)
-						.leftJoin(
+						.innerJoin(
 							snippetHighlights,
 							eq(snippets.id, snippetHighlights.snippetId),
 						)
@@ -217,9 +217,7 @@ export async function buildSchema(env: Env) {
 			}),
 			title: t.exposeString("title"),
 			code: t.exposeString("code"),
-			highlightedCodeHtml: t.exposeString("highlightedCodeHtml", {
-				nullable: true,
-			}),
+			highlightedCodeHtml: t.exposeString("highlightedCodeHtml"),
 			language: t.exposeString("language"),
 			postedAt: t.exposeString("postedAt"),
 		}),

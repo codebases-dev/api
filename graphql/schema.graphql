@@ -1,6 +1,6 @@
 type HighlightedSnippet {
   code: String!
-  highlightedCodeHtml: String
+  highlightedCodeHtml: String!
   id: String!
   language: String!
   postedAt: String!
