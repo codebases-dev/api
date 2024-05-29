@@ -53,13 +53,9 @@ export async function buildSchema(env: Env) {
 				description: "Get a snippet by ID",
 				type: "HighlightedSnippet",
 				args: {
-					id: t.arg.string(),
+					id: t.arg.string({ required: true }),
 				},
 				resolve: async (_, { id }) => {
-					if (!id) {
-						throw new Error("ID not found");
-					}
-
 					const result = await db
 						.select({
 							id: snippets.id,
@@ -94,30 +90,14 @@ export async function buildSchema(env: Env) {
 				description: "Create a snippet",
 				type: "HighlightedSnippet",
 				args: {
-					userId: t.arg.string(),
-					title: t.arg.string(),
-					code: t.arg.string(),
-					language: t.arg.string(),
+					userId: t.arg.string({ required: true }),
+					title: t.arg.string({ required: true }),
+					code: t.arg.string({ required: true }),
+					language: t.arg.string({ required: true }),
 				},
 				resolve: async (_, { userId, title, code, language }) => {
-					if (!userId) {
-						throw new Error("User ID not found");
-					}
-
 					// Check if user exists
 					await clerk.users.getUser(userId);
-
-					if (!title) {
-						throw new Error("Title is required");
-					}
-
-					if (!code) {
-						throw new Error("Code is required");
-					}
-
-					if (!language) {
-						throw new Error("Language is required");
-					}
 
 					const postedAt = new Date().toISOString();
 
@@ -164,13 +144,9 @@ export async function buildSchema(env: Env) {
 				description: "Delete a snippet",
 				type: "HighlightedSnippet",
 				args: {
-					id: t.arg.string(),
+					id: t.arg.string({ required: true }),
 				},
 				resolve: async (_, { id }) => {
-					if (!id) {
-						throw new Error("ID not found");
-					}
-
 					const snippetsResult = await db
 						.delete(snippets)
 						.where(eq(snippets.id, id))

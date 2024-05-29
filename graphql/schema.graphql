@@ -11,15 +11,15 @@ type HighlightedSnippet {
 
 type Mutation {
   """Create a snippet"""
-  createSnippet(code: String, language: String, title: String, userId: String): HighlightedSnippet!
+  createSnippet(code: String!, language: String!, title: String!, userId: String!): HighlightedSnippet!
 
   """Delete a snippet"""
-  deleteSnippet(id: String): HighlightedSnippet!
+  deleteSnippet(id: String!): HighlightedSnippet!
 }
 
 type Query {
   """Get a snippet by ID"""
-  snippet(id: String): HighlightedSnippet!
+  snippet(id: String!): HighlightedSnippet!
 
   """Get list of snippets"""
   snippets(userId: String): [HighlightedSnippet!]!
