@@ -22,7 +22,10 @@ type Query {
   snippet(id: String!): HighlightedSnippet!
 
   """Get list of snippets"""
-  snippets(userId: String): [HighlightedSnippet!]!
+  snippets(username: String): [HighlightedSnippet!]!
+
+  """Get a user by username"""
+  userByUsername(username: String!): User!
 }
 
 type User {

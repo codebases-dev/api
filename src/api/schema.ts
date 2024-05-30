@@ -1,6 +1,6 @@
 import { createClerkClient } from "@clerk/backend";
 import SchemaBuilder from "@pothos/core";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, exists } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { type Snippet, snippetHighlights, snippets } from "~/db/schema";
 import type { Env } from "~/env";
@@ -27,10 +27,10 @@ export async function buildSchema(env: Env) {
 				description: "Get list of snippets",
 				type: ["HighlightedSnippet"],
 				args: {
-					userId: t.arg.string(),
+					username: t.arg.string(),
 				},
-				resolve: async (_, { userId }) =>
-					db
+				resolve: async (_, { username }) => {
+					const query = db
 						.select({
 							id: snippets.id,
 							userId: snippets.userId,
@@ -44,10 +44,23 @@ export async function buildSchema(env: Env) {
 						.innerJoin(
 							snippetHighlights,
 							eq(snippets.id, snippetHighlights.snippetId),
-						)
-						.where(userId ? eq(snippets.userId, userId) : undefined)
-						.orderBy(desc(snippets.postedAt))
-						.limit(100),
+						);
+
+					if (username) {
+						const users = await clerk.users.getUserList({
+							limit: 1,
+							username,
+						});
+
+						if (users.totalCount === 0) {
+							throw new Error("User not found");
+						}
+
+						query.where(eq(snippets.userId, users.data[0].id));
+					}
+
+					return query.orderBy(desc(snippets.postedAt)).limit(100);
+				},
 			}),
 			snippet: t.field({
 				description: "Get a snippet by ID",
@@ -79,6 +92,31 @@ export async function buildSchema(env: Env) {
 					}
 
 					return result[0];
+				},
+			}),
+			userByUsername: t.field({
+				description: "Get a user by username",
+				type: "User",
+				args: {
+					username: t.arg.string({ required: true }),
+				},
+				resolve: async (_, { username }) => {
+					const users = await clerk.users.getUserList({
+						limit: 1,
+						username,
+					});
+
+					if (users.totalCount === 0) {
+						throw new Error("User not found");
+					}
+
+					const user = users.data[0];
+					return {
+						id: user.id,
+						username: user.username ?? "",
+						displayName: user.fullName ?? "",
+						imageUrl: user.imageUrl,
+					};
 				},
 			}),
 		}),
